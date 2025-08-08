@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sophie! 🎂</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Password Screen Styles */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 2000;
+            transition: all 0.8s ease;
+        }
+
+        .password-screen.hidden {
+            opacity: 0;
+            transform: translateY(-100%);
+            pointer-events: none;
+        }
+
+        .password-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .password-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,192,203,0.2), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        .password-title {
+            color: #d63384;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .password-subtitle {
+            color: #8e44ad;
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .password-input-group {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 30px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 20px;
+            border: 3px solid #f8d7da;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            color: #495057;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #d63384;
+            box-shadow: 0 0 20px rgba(214, 51, 132, 0.3);
+            transform: scale(1.02);
+        }
+
+        .password-btn {
+            background: linear-gradient(45deg, #d63384, #e83e8c);
+            border: none;
+            padding: 20px 40px;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(214, 51, 132, 0.3);
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(214, 51, 132, 0.4);
+        }
+
+        .password-error {
+            color: #dc3545;
+            font-size: 1rem;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .password-error.show {
+            opacity: 1;
+        }
+
+        .floating-birthday-emojis {
+            position: absolute;
+            font-size: 3rem;
+            animation: float 4s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .emoji-pw-1 { top: 10%; left: 10%; animation-delay: 0s; }
+        .emoji-pw-2 { top: 20%; right: 15%; animation-delay: 1s; }
+        .emoji-pw-3 { bottom: 20%; left: 20%; animation-delay: 2s; }
+        .emoji-pw-4 { bottom: 15%; right: 10%; animation-delay: 3s; }
+        .emoji-pw-5 { top: 50%; left: 5%; animation-delay: 0.5s; }
+        .emoji-pw-6 { top: 60%; right: 8%; animation-delay: 2.5s; }
+
+        /* Main Content Styles */
+        .main-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            padding-bottom: 150px; 
+        }
+        
+        .page.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .page.prev {
+            transform: translateX(-100%);
+        }
+        
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #d63384;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            background: #d63384;
+            color: white;
+        }
+        
+        .nav-btn.active {
+            background: #d63384;
+            color: white;
+            transform: scale(1.2);
+        }
+        
+        .page-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: #d63384;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Page 1 - Welcome */
+        .welcome-page {
+            text-align: center;
+        }
+        
+        .sophie-photo {
+            position: relative;
+            margin: 20px 0;
+            display: inline-block;
+        }
+        
+        .sophie-photo img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.3);
+            transition: all 0.3s ease;
+            animation: photoGlow 3s ease-in-out infinite alternate;
+        }
+        
+        .sophie-photo:hover img {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.5);
+        }
+        
+        .photo-frame {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 3px solid #d63384;
+            border-radius: 50%;
+            animation: frameRotate 10s linear infinite;
+        }
+        
+        .photo-frame::before {
+            content: '✨';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        .main-title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #d63384;
+            text-shadow: 3px 3px 6px rgba(214, 51, 132, 0.3);
+            margin-bottom: 20px;
+            animation: bounceIn 1.5s ease-out;
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            color: #8e44ad;
+            font-weight: 600;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+        
+        .birthday-cake {
+            font-size: 10rem;
+            animation: spin 4s linear infinite;
+            margin: 30px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .birthday-cake:hover {
+            transform: scale(1.2);
+        }
+        
+        .click-hint {
+            color: #8e44ad;
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+            margin-top: 20px;
+        }
+        
+        /* Page 2 - Blessing */
+        .blessing-page {
+            text-align: center;
+        }
+        
+        .blessing-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 3px solid #f8d7da;
+            transform: scale(0.8);
+            animation: expandIn 1s ease-out forwards;
+            width: 90%;
+            max-width: 800px;
+        }
+        
+        .blessing-card h2 {
+            color: #d63384;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .blessing-card p {
+            font-size: 1.4rem;
+            color: #6c757d;
+            line-height: 1.8;
+        }
+        
+        .floating-emojis {
+            position: absolute;
+            font-size: 3rem;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .emoji-1 { top: 10%; left: 10%; animation-delay: 0s; }
+        .emoji-2 { top: 20%; right: 15%; animation-delay: 1s; }
+        .emoji-3 { bottom: 20%; left: 20%; animation-delay: 2s; }
+        .emoji-4 { bottom: 15%; right: 10%; animation-delay: 3s; }
+        
+        /* Page 3 - Video Messages */
+        .video-page {
+            text-align: center;
+        }
+        
+        .video-title {
+            color: #d63384;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: bounceIn 1s ease-out;
+        }
+        
+        .video-subtitle {
+            color: #8e44ad;
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            background: #000;
+            aspect-ratio: 16/9;
+        }
+        
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+        }
+        
+        .video-note {
+            color: #8e44ad;
+            font-size: 1.2rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        .floating-hearts {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        .heart-1 { top: 15%; left: 8%; animation-delay: 0s; }
+        .heart-2 { top: 25%; right: 12%; animation-delay: 1s; }
+        .heart-3 { top: 60%; left: 5%; animation-delay: 2s; }
+        .heart-4 { top: 70%; right: 8%; animation-delay: 3s; }
+        .heart-5 { top: 40%; left: 15%; animation-delay: 0.5s; }
+        .heart-6 { top: 50%; right: 20%; animation-delay: 2.5s; }
+        
+        /* Page 4 - Sweet Treats Game */
+        .treats-page {
+            text-align: center;
+        }
+        
+        .treats-title {
+            color: #d63384;
+            font-size: 3rem;
+            margin-bottom: 40px;
+            animation: bounceIn 1s ease-out;
+        }
+        
+        .treats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        .treat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .treat-card:hover {
+            transform: translateY(-10px) rotate(2deg);
+            border-color: #d63384;
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.3);
+        }
+        
+        .treat-card.clicked {
+            animation: treatPop 0.6s ease-out;
+        }
+        
+        .treat-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        
+        .treat-card:hover .treat-icon {
+            transform: scale(1.3) rotate(10deg);
+        }
+        
+        .treat-card h3 {
+            color: #d63384;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .score {
+            font-size: 1.5rem;
+            color: #8e44ad;
+            font-weight: 600;
+        }
+        
+        /* Page 5 - Encouragement */
+        .encouragement-page {
+            text-align: center;
+        }
+        
+        .encouragement-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            width: 90%;
+            max-width: 900px;
+        }
+        
+        .encouragement-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+        
+        .encouragement-card h2 {
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .encouragement-card p {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .worry-buster {
+            position: absolute;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .worry-buster:hover {
+            transform: scale(1.5);
+        }
+        
+        /* Page 6 - Final Wishes */
+        .wishes-page {
+            text-align: center;
+        }
+        
+        .wishes-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            width: 90%;
+            max-width: 800px;
+        }
+        
+        .wishes-card h2 {
+            color: #d63384;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .wishes-card p {
+            font-size: 1.3rem;
+            color: #6c757d;
+            line-height: 1.7;
+        }
+        
+        .celebration-btn {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .celebration-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Animations */
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes expandIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @keyframes treatPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        @keyframes firework {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(4) rotate(180deg); opacity: 0; }
+        }
+        
+        .firework {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: firework 1s ease-out forwards;
+        }
+        
+        .sophie-sticker {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            animation: sophieWobble 2s ease-in-out infinite;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(214, 51, 132, 0.6);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes photoGlow {
+            0% { box-shadow: 0 10px 30px rgba(214, 51, 132, 0.3); }
+            100% { box-shadow: 0 10px 30px rgba(214, 51, 132, 0.6); }
+        }
+        
+        @keyframes frameRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.5; transform: translateX(-50%) scale(1.2); }
+        }
+        
+        @keyframes sophieWobble {
+            0%, 100% { 
+                transform: rotate(-3deg) scale(1);
+            }
+            25% {
+                transform: rotate(2deg) scale(1.05);
+            }
+            50% {
+                transform: rotate(-2deg) scale(1.1);
+            }
+            75% {
+                transform: rotate(3deg) scale(1.05);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-title { font-size: 2.8rem; }
+            .subtitle { font-size: 1.3rem; }
+            
+            .treats-grid { 
+                grid-template-columns: 1fr; 
+                gap: 20px;
+            }
+            
+            .nav-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+            .birthday-cake { font-size: 7rem; }
+            
+            .password-card { padding: 40px 30px; }
+            .password-title { font-size: 2.2rem; }
+            
+            .blessing-card, .wishes-card, .encouragement-card {
+                padding: 30px 25px;
+            }
+            .treat-card {
+                padding: 20px;
+            }
+
+            .blessing-card h2, .video-title, .treats-title, .encouragement-card h2, .wishes-card h2 {
+                font-size: 2rem;
+            }
+            .blessing-card p, .encouragement-card p, .wishes-card p {
+                font-size: 1.1rem;
+                line-height: 1.6;
+            }
+            .video-subtitle { font-size: 1.1rem; }
+            
+            .video-container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="password-screen" id="passwordScreen">
+        <div class="floating-birthday-emojis emoji-pw-1">🎂</div>
+        <div class="floating-birthday-emojis emoji-pw-2">🎉</div>
+        <div class="floating-birthday-emojis emoji-pw-3">🎈</div>
+        <div class="floating-birthday-emojis emoji-pw-4">🎁</div>
+        <div class="floating-birthday-emojis emoji-pw-5">✨</div>
+        <div class="floating-birthday-emojis emoji-pw-6">💖</div>
+
+        <div class="password-card">
+            <h1 class="password-title">🎉 Special Access 🎉</h1>
+            <p class="password-subtitle">Enter the magic word to unlock Sophie's birthday celebration!</p>
+            
+            <div class="password-input-group">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="password-input" 
+                    placeholder="Enter password..."
+                    onkeypress="handlePasswordKeypress(event)"
+                >
+            </div>
+            
+            <button class="password-btn" onclick="checkPassword()">
+                🔓 Unlock Birthday Magic
+            </button>
+            
+            <div class="password-error" id="passwordError">
+                Oops! That's not the right magic word. Try again! 🎯
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="page-indicator" id="pageIndicator">Page 1 of 6</div>
+
+        <div class="page active welcome-page" id="page1">
+            <h1 class="main-title">🎉 Happy Birthday Sophie! 🎉</h1>
+            <p class="subtitle">✨ A Sweet Celebration for a Sweet Soul ✨</p>
+            
+            <div class="sophie-photo">
+                <img src="sophie-photo.jpg" alt="Beautiful Sophie" id="sophieImg">
+                <div class="photo-frame"></div>
+            </div>
+            
+            <div class="birthday-cake" onclick="blowCandles()">🎂</div>
+            <p class="click-hint" id="blowHint">🎤 Blow into your mic or click the cake to blow out the candles! 🕯️</p>
+            <button class="mic-button" id="micButton" onclick="requestMicrophone()" style="
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                border: none;
+                padding: 15px 30px;
+                border-radius: 25px;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                margin-top: 20px;
+            ">🎤 Enable Microphone Magic</button>
+        </div>
+
+        <div class="page blessing-page" id="page2">
+            <div class="floating-emojis emoji-1">🙏</div>
+            <div class="floating-emojis emoji-2">✨</div>
+            <div class="floating-emojis emoji-3">💖</div>
+            <div class="floating-emojis emoji-4">🌟</div>
+            
+            <div class="blessing-card">
+                <h2>🙏 God's Blessings Upon You</h2>
+                <p>On this special day, may God shower you with His abundant love, joy, and peace. You are fearfully and wonderfully made, dear Sophie, and you bring so much light into this world with your bubbly spirit! 💖</p>
+            </div>
+        </div>
+
+        <div class="page video-page" id="page3">
+            <h2 class="video-title">💝 Messages from Your Amazing Friends! 💝</h2>
+            <p class="video-subtitle">They all wanted to wish you the happiest of birthdays! 🥳</p>
+            
+            <div class="video-container">
+                <iframe 
+                    src="https://drive.google.com/file/d/15Kpw0WA-Nz1L4JsGVmOaNDL7tUu853Qb/preview" 
+                    allow="autoplay"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            
+            <p class="video-note">💕 You are so loved, Sophie! 💕</p>
+            
+            <div class="floating-hearts heart-1">💖</div>
+            <div class="floating-hearts heart-2">💝</div>
+            <div class="floating-hearts heart-3">💕</div>
+            <div class="floating-hearts heart-4">💗</div>
+            <div class="floating-hearts heart-5">💘</div>
+            <div class="floating-hearts heart-6">❤️</div>
+        </div>
+
+        <div class="page treats-page" id="page4">
+            <h2 class="treats-title">🧋 Sophie's Sweet Treats! 🧋</h2>
+            <p style="color: #8e44ad; font-size: 1.3rem; margin-bottom: 30px;">Click on your favorite treats to collect sweet points!</p>
+            
+            <div class="treats-grid">
+                <div class="treat-card" onclick="collectTreat(this, 'bubble-tea')">
+                    <span class="treat-icon">🧋</span>
+                    <h3>Bubble Tea</h3>
+                    <p>Sweet & Bubbly!</p>
+                </div>
+                
+                <div class="treat-card" onclick="collectTreat(this, 'cake')">
+                    <span class="treat-icon">🎂</span>
+                    <h3>Birthday Cake</h3>
+                    <p>Pure Joy!</p>
+                </div>
+                
+                <div class="treat-card" onclick="collectTreat(this, 'milo')">
+                    <span class="treat-icon">☕</span>
+                    <h3>Milo Magic</h3>
+                    <p>Warm Comfort!</p>
+                </div>
+                
+                <div class="treat-card" onclick="collectTreat(this, 'cupcake')">
+                    <span class="treat-icon">🧁</span>
+                    <h3>Cupcakes</h3>
+                    <p>Bite-sized Bliss!</p>
+                </div>
+                
+                <div class="treat-card" onclick="collectTreat(this, 'ice-cream')">
+                    <span class="treat-icon">🍦</span>
+                    <h3>Ice Cream</h3>
+                    <p>Creamy Dreams!</p>
+                </div>
+                
+                <div class="treat-card" onclick="collectTreat(this, 'candy')">
+                    <span class="treat-icon">🍭</span>
+                    <h3>Sweet Candy</h3>
+                    <p>Pure Sweetness!</p>
+                </div>
+            </div>
+            
+            <div class="score">Sweet Points: <span id="score">0</span> 🍯</div>
+        </div>
+
+        <div class="page encouragement-page" id="page5">
+            <div class="worry-buster" style="top: 10%; left: 10%;" onclick="bustWorry(this)">💪</div>
+            <div class="worry-buster" style="top: 15%; right: 10%;" onclick="bustWorry(this)">🌟</div>
+            <div class="worry-buster" style="bottom: 20%; left: 15%;" onclick="bustWorry(this)">🦋</div>
+            <div class="worry-buster" style="bottom: 15%; right: 15%;" onclick="bustWorry(this)">🌈</div>
+            
+            <div class="encouragement-card">
+                <h2>💪 You've Got This, Sophie!</h2>
+                <p>Sweet Sophie, I know you sometimes worry, but remember - you are stronger than you think, braver than you believe, and more loved than you could ever imagine. God has beautiful plans for your life, and every challenge is just preparing you for something amazing! Trust in His timing and let your bubbly spirit shine bright. Click the worry-busters around the screen! 🌟</p>
+            </div>
+        </div>
+
+        <div class="page wishes-page" id="page6">
+            <div class="wishes-card">
+                <h2>🎈 Make This Year Amazing!</h2>
+                <p>May this new year of life be filled with sweet moments, answered prayers, peaceful thoughts, and endless reasons to smile. You deserve all the happiness in the world, Sophie! 🌸💕</p>
+            </div>
+            
+            <button class="celebration-btn" onclick="finalCelebration()">
+                🎉 Start the Final Celebration! 🎉
+            </button>
+        </div>
+
+        <div class="nav-container">
+            <button class="nav-btn active" onclick="goToPage(1)">🎂</button>
+            <button class="nav-btn" onclick="goToPage(2)">🙏</button>
+            <button class="nav-btn" onclick="goToPage(3)">💝</button>
+            <button class="nav-btn" onclick="goToPage(4)">🧋</button>
+            <button class="nav-btn" onclick="goToPage(5)">💪</button>
+            <button class="nav-btn" onclick="goToPage(6)">🎉</button>
+        </div>
+    </div>
+
+    <script>
+        // Password system
+        const correctPassword = "2389"; // Change this to whatever password you want
+        
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            const passwordScreen = document.getElementById('passwordScreen');
+            
+            if (input.value === correctPassword) {
+                // Correct password - hide password screen with animation
+                passwordScreen.classList.add('hidden');
+                
+                // Start the birthday experience
+                setTimeout(() => {
+                    initializeBirthdayExperience();
+                }, 800);
+            } else {
+                // Wrong password - show error
+                error.classList.add('show');
+                input.value = '';
+                input.style.animation = 'none';
+                
+                // Shake animation for input
+                setTimeout(() => {
+                    input.style.animation = 'pulse 0.5s ease-in-out';
+                }, 10);
+                
+                // Hide error after 3 seconds
+                setTimeout(() => {
+                    error.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
+        function handlePasswordKeypress(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        }
+        
+        function initializeBirthdayExperience() {
+            // Initialize all the birthday interactive elements
+            console.log("🎉 Welcome to Sophie's Birthday Celebration! 🎉");
+            
+            // Try to initialize microphone automatically (will fail silently if denied)
+            setTimeout(() => {
+                requestMicrophone();
+            }, 1000);
+        }
+        
+        async function requestMicrophone() {
+            const micButton = document.getElementById('micButton');
+            const blowHint = document.getElementById('blowHint');
+            
+            if (microphoneActive) {
+                return; // Already active
+            }
+            
+            micButton.innerHTML = '🎤 Activating...';
+            micButton.disabled = true;
+            
+            const success = await initializeMicrophone();
+            
+            if (success) {
+                micButton.style.display = 'none'; // Hide button when successful
+                if (blowHint) {
+                    blowHint.innerHTML = '🌬️ Microphone ready! Blow into your mic to extinguish the candles! 🕯️';
+                    blowHint.style.animation = 'pulse 2s infinite';
+                }
+            } else {
+                micButton.innerHTML = '🎤 Try Again (Mic Needed)';
+                micButton.disabled = false;
+                if (blowHint) {
+                    blowHint.innerHTML = 'Click the cake to blow out the candles! 🕯️';
+                }
+            }
+        }
+
+        // Microphone blow detection variables
+        let microphoneActive = false;
+        let audioContext = null;
+        let analyser = null;
+        let dataArray = null;
+        let blowThreshold = 140; // Adjust this value for sensitivity
+        let isListening = false;
+        let blowDetected = false;
+        
+        async function initializeMicrophone() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                const microphone = audioContext.createMediaStreamSource(stream);
+                
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                
+                microphone.connect(analyser);
+                microphoneActive = true;
+                
+                // Start listening for blowing
+                startBlowDetection();
+                
+                console.log("🎤 Microphone activated! You can now blow to extinguish the candles!");
+                return true;
+            } catch (error) {
+                console.log("Microphone access denied or not available:", error);
+                return false;
+            }
+        }
+        
+        function startBlowDetection() {
+            if (!microphoneActive || !analyser) return;
+            
+            isListening = true;
+            detectBlow();
+        }
+        
+        function detectBlow() {
+            if (!isListening || !analyser) return;
+            
+            analyser.getByteFrequencyData(dataArray);
+            
+            // Calculate average volume level
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+            }
+            const average = sum / dataArray.length;
+            
+            // Detect blow (sudden increase in volume)
+            if (average > blowThreshold && !blowDetected && currentPage === 1) {
+                console.log("🌬️ Blow detected! Average volume:", average);
+                blowDetected = true;
+                blowCandles();
+                
+                // Reset blow detection after a delay
+                setTimeout(() => {
+                    blowDetected = false;
+                }, 3000);
+            }
+            
+            // Continue monitoring
+            if (isListening) {
+                requestAnimationFrame(detectBlow);
+            }
+        }
+        
+        function stopBlowDetection() {
+            isListening = false;
+        }
+        
+        function blowCandles() {
+            const cake = document.querySelector('.birthday-cake');
+            const clickHint = document.querySelector('.click-hint');
+            
+            // Change cake to blown-out version
+            cake.innerHTML = '🎂';
+            
+            // Animate the cake transformation
+            cake.style.animation = 'none';
+            cake.style.transform = 'scale(1.2)';
+            
+            setTimeout(() => {
+                cake.innerHTML = '🍰';
+                createFireworks();
+                
+                // Update hint text
+                if (clickHint) {
+                    clickHint.innerHTML = '🌟 Amazing! You blew out the candles! 🌟';
+                    clickHint.style.color = '#d63384';
+                    clickHint.style.fontWeight = 'bold';
+                }
+                
+                // Restore original cake after celebration
+                setTimeout(() => {
+                    cake.innerHTML = '🎂';
+                    cake.style.animation = 'spin 4s linear infinite';
+                    cake.style.transform = 'scale(1)';
+                    
+                    if (clickHint) {
+                        clickHint.innerHTML = 'Try blowing again or click the cake! 🕯️';
+                        clickHint.style.fontWeight = 'normal';
+                    }
+                }, 3000);
+            }, 200);
+        }
+
+        // Main birthday celebration variables
+        let currentPage = 1;
+        let score = 0;
+        let worryBusters = 0;
+        
+        // Page navigation
+        function goToPage(pageNum) {
+            const pages = document.querySelectorAll('.page');
+            const navBtns = document.querySelectorAll('.nav-btn');
+            
+            // Remove active class from all
+            pages.forEach(page => {
+                page.classList.remove('active', 'prev');
+            });
+            navBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // Add prev class to current page
+            if (currentPage < pageNum) {
+                document.getElementById(`page${currentPage}`).classList.add('prev');
+            }
+            
+            // Activate new page
+            document.getElementById(`page${pageNum}`).classList.add('active');
+            navBtns[pageNum - 1].classList.add('active');
+            
+            currentPage = pageNum;
+            document.getElementById('pageIndicator').textContent = `Page ${pageNum} of 6`;
+            
+            // Control microphone listening based on page
+            if (pageNum === 1 && microphoneActive) {
+                startBlowDetection();
+            } else {
+                stopBlowDetection();
+            }
+        }
+        
+        // Interactive functions
+        function collectTreat(card, treatType) {
+            card.classList.add('clicked');
+            score += 10;
+            document.getElementById('score').textContent = score;
+            
+            // Create floating score
+            const floatingScore = document.createElement('div');
+            floatingScore.textContent = '+10';
+            floatingScore.style.position = 'absolute';
+            floatingScore.style.color = '#d63384';
+            floatingScore.style.fontSize = '2rem';
+            floatingScore.style.fontWeight = 'bold';
+            floatingScore.style.pointerEvents = 'none';
+            floatingScore.style.animation = 'fadeInUp 1s ease-out forwards';
+            
+            const rect = card.getBoundingClientRect();
+            floatingScore.style.left = rect.left + rect.width/2 + 'px';
+            floatingScore.style.top = rect.top + 'px';
+            
+            document.body.appendChild(floatingScore);
+            
+            setTimeout(() => {
+                card.classList.remove('clicked');
+                floatingScore.remove();
+            }, 1000);
+        }
+        
+        function bustWorry(element) {
+            element.style.animation = 'treatPop 0.6s ease-out';
+            element.innerHTML = '✨';
+            worryBusters++;
+            
+            if (worryBusters >= 4) {
+                setTimeout(() => {
+                    alert('Amazing! You\'ve busted all the worries away! 🌟');
+                }, 500);
+            }
+            
+            setTimeout(() => {
+                element.style.opacity = '0.3';
+            }, 600);
+        }
+        
+        function finalCelebration() {
+            // Create massive fireworks display
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createFireworks();
+                }, i * 200);
+            }
+            
+            // Create Sophie stickers that wobble in place on screen
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    createSophieSticker(i);
+                }, i * 500);
+            }
+            
+            // Show success message
+            setTimeout(() => {
+                alert(`🎉 HAPPY BIRTHDAY SOPHIE! 🎉\n\nYou collected ${score} sweet points and busted ${worryBusters} worries!\n\nMay this year be your sweetest yet! 💖`);
+            }, 4000);
+        }
+        
+        function createSophieSticker(index) {
+            const sticker = document.createElement('div');
+            sticker.className = 'sophie-sticker';
+            
+            // Sophie's actual sticker images
+            const stickerImages = [
+                'sophie-sticker-1.png',  // Happy Sophie
+                'sophie-sticker-2.png',  // Cute Sophie
+                'sophie-sticker-3.png',  // Bubbly Sophie
+                'sophie-sticker-4.png',  // Sweet Sophie
+                'sophie-sticker-5.png'   // Birthday Sophie
+            ];
+            
+            const img = document.createElement('img');
+            img.src = stickerImages[index];
+            img.alt = 'Sophie Sticker';
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.style.objectFit = 'contain';
+            
+            // Wait for image to load to get its dimensions
+            img.onload = function() {
+                const aspectRatio = this.naturalWidth / this.naturalHeight;
+                let bubbleSize;
+                
+                // Determine bubble size based on image dimensions
+                if (aspectRatio > 1.2) {
+                    // Wide image - base size on width
+                    bubbleSize = Math.min(Math.max(this.naturalWidth * 0.3, 80), 140);
+                } else if (aspectRatio < 0.8) {
+                    // Tall image - base size on height  
+                    bubbleSize = Math.min(Math.max(this.naturalHeight * 0.3, 80), 140);
+                } else {
+                    // Square-ish image - use average
+                    bubbleSize = Math.min(Math.max((this.naturalWidth + this.naturalHeight) * 0.15, 80), 140);
+                }
+                
+                // Set the bubble size
+                sticker.style.width = bubbleSize + 'px';
+                sticker.style.height = bubbleSize + 'px';
+                
+                // Adjust image sizing based on aspect ratio
+                if (aspectRatio > 1) {
+                    // Wide image - fit to width, center vertically
+                    img.style.width = '85%';
+                    img.style.height = 'auto';
+                } else {
+                    // Tall or square image - fit to height, center horizontally
+                    img.style.height = '85%';
+                    img.style.width = 'auto';
+                }
+            };
+            
+            // Fallback dimensions if image doesn't load
+            img.onerror = function() {
+                sticker.style.width = '100px';
+                sticker.style.height = '100px';
+                img.style.width = '80%';
+                img.style.height = '80%';
+                img.style.objectFit = 'cover';
+            };
+            
+            sticker.appendChild(img);
+            
+            // Position stickers around the screen in a nice pattern
+            const positions = [
+                { top: '15%', left: '10%' },
+                { top: '20%', right: '15%' },
+                { top: '45%', left: '8%' },
+                { bottom: '25%', right: '12%' },
+                { bottom: '15%', left: '45%' }
+            ];
+            
+            const pos = positions[index];
+            
+            // Apply position styles
+            Object.keys(pos).forEach(key => {
+                sticker.style[key] = pos[key];
+            });
+            
+            // Add slight random rotation for variety
+            const baseRotation = Math.random() * 20 - 10; // -10 to +10 degrees
+            sticker.style.transform = `rotate(${baseRotation}deg)`;
+            
+            // Add staggered animation delay for a wave effect
+            sticker.style.animationDelay = `${index * 0.3}s`;
+            
+            document.body.appendChild(sticker);
+            
+            // Keep stickers on screen - they'll wobble indefinitely
+            setTimeout(() => {
+                if (sticker.parentNode && currentPage === 6) {
+                    sticker.style.opacity = '0.8'; // Fade slightly after a while but keep visible
+                }
+            }, 30000); // 30 seconds
+        }
+        
+        function createFireworks() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+            
+            for (let i = 0; i < 8; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                firework.style.left = Math.random() * window.innerWidth + 'px';
+                firework.style.top = Math.random() * window.innerHeight + 'px';
+                
+                document.body.appendChild(firework);
+                
+                setTimeout(() => {
+                    firework.remove();
+                }, 1000);
+            }
+        }
+        
+        // Auto-advance hint for first page
+        setTimeout(() => {
+            if (currentPage === 1) {
+                const hint = document.querySelector('.click-hint');
+                if (hint) {
+                    hint.innerHTML = 'Click the cake, then use the buttons below to explore! 🎮';
+                }
+            }
+        }, 5000);
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Only allow navigation if password screen is hidden
+            const passwordScreen = document.getElementById('passwordScreen');
+            if (passwordScreen.classList.contains('hidden')) {
+                if (e.key === 'ArrowRight' && currentPage < 6) {
+                    goToPage(currentPage + 1);
+                } else if (e.key === 'ArrowLeft' && currentPage > 1) {
+                    goToPage(currentPage - 1);
+                }
+            }
+        });
+
+        // Focus password input on load
+        window.onload = function() {
+            document.getElementById('passwordInput').focus();
+        }
+    </script>
+</body>
+</html>
